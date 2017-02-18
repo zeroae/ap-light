@@ -1,0 +1,46 @@
+#!/bin/bash -e
+
+arrays_json=/container/service/:containerpilot/assets/arrays.json
+# Render a ContainerPilot Template file.
+function render_template() {
+    in_file=$1
+    out_file=${in_file%.cptmpl}
+
+    containerpilot -template -config file://${in_file} -out file://${out_file}
+}
+export -f render_template
+
+cd /etc/consul.d
+find . -type f -name '*.json.cptmpl' -exec bash -c 'render_template "$0"' {} \;
+
+cd /etc/containerpilot.d
+find . -type f -name '*.json.cptmpl' -exec bash -c 'render_template "$0"' {} \;
+
+# This will be obsolete in ContainerPilot 3.0
+# Extract the arrays except telemetry
+for i in $(jq 'del(.telemetry) | keys | @sh' $arrays_json); do
+    key=$(echo $i | sed -e 's/"//g' -e "s/'//g");
+    jq -s \
+        "reduce .[].$key as \$item ([]; . + \$item) | { \"$key\": [ .[] ]}" \
+        *.json > /tmp/cp-$key.json
+done
+
+# Extract telemetry.sensors
+jq -s \
+    'reduce .[].telemetry.sensors as $item ([]; . + $item) | { "telemetry": { "sensors": [ .[] ] } }' \
+    *.json > /tmp/cp-telemetry-sensors.json
+
+
+# Extract all except arrays
+jq -s \
+    'reduce .[] as $item ({}; . * $item)' \
+    *.json $arrays_json > /tmp/cp-base.json
+
+
+# Combine all
+jq -s \
+    'reduce .[] as $item ({}; . * $item)' \
+    /tmp/cp-*.json > /etc/containerpilot.json
+
+# Remove intermediate files.
+rm -f /tmp/cp-*.json

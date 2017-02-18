@@ -1,4 +1,4 @@
-# osixia/light-baseimage
+# zeroae/ap-light-baseimage
 
 [![Docker Pulls](https://img.shields.io/docker/pulls/osixia/light-baseimage.svg)][hub]
 [![Docker Stars](https://img.shields.io/docker/stars/osixia/light-baseimage.svg)][hub]
@@ -6,16 +6,14 @@
 
 [hub]: https://hub.docker.com/r/osixia/light-baseimage/
 
-Latest release: 0.2.6 -  [Changelog](CHANGELOG.md)
+Latest release: 0.0.1 -  [Changelog](CHANGELOG.md)
  | [Docker Hub](https://hub.docker.com/r/osixia/light-baseimage/) 
 
-A Debian Jessie based docker image to build reliable image quickly. This image provide a simple opinionated solution to build multiple or single process image with minimum of layers and an optimized build.
+A Debian Jessie based docker image to build reliable autopilot based images quickly. This image provides a simple opinionated solution to build single process image with minimum of layers and an optimized build.
 
-The aims of this image is to be used as a base for your own Docker images. It's base on the awesome work of: [phusion/baseimage-docker](https://github.com/phusion/baseimage-docker)
-
-Other base distribution are available:
-- [Alpine 3.4](https://github.com/osixia/docker-light-baseimage/tree/feature-linux-alpine) | Beta | [Docker Hub](https://hub.docker.com/r/osixia/alpine-light-baseimage/) | [![](https://images.microbadger.com/badges/image/osixia/alpine-light-baseimage.svg)](http://microbadger.com/images/osixia/alpine-light-baseimage "Get your own image badge on microbadger.com")
-- [Ubuntu 14:04](https://github.com/osixia/docker-light-baseimage/tree/ubuntu) | [Docker Hub](https://hub.docker.com/r/osixia/ubuntu-light-baseimage/) | [![](https://images.microbadger.com/badges/image/osixia/ubuntu-light-baseimage.svg)](http://microbadger.com/images/osixia/ubuntu-light-baseimage "Get your own image badge on microbadger.com")
+The aims of this image is to be used as a base for your own Docker images. It's based on the awesome work of: 
+- [osixia/light-baseimage](https://github.com/osixia/light-baseimage)
+- [joyent/containerpilot](https://github.com/joyent/containerpilot)
 
 Table of Contents
 - [Contributing](#contributing)
@@ -29,12 +27,7 @@ Table of Contents
 		- [Service files](#service-files)
 		- [Environment files](#environment-files)
 		- [Build and test](#build-and-test)
-	- [Create a multiple process image](#create-a-multiple-process-image)
-		- [Overview](#create-a-multiple-process-image)
-		- [Dockerfile](#dockerfile-1)
-		- [Service files](#service-files-1)
-		- [Build and test](#build-and-test-1)
-- [Images Based On Light-Baseimage](#images-based-on-light-baseimage)
+- [Images Based On Autopilot-Light-Baseimage](#images-based-on-light-baseimage)
 - [Image Assets](#image-assets)
 	- [Tools](#image-assets)
 	- [Services available](#services-available)
@@ -342,200 +335,11 @@ In the output:
 Refresh [http://localhost:8080/](http://localhost:8080/) and you should see:
 > Hi! I'm bobby.
 
-### Create a multiple process image
-
-#### Overview
-
-This example takes back the single process image example and add php5-fpm to run php scripts.
-
-See complete example in: [example/multiple-process-image](example/multiple-process-image)
-
-Note: it would have been  ♪ ~~harder~~, faster, better, stronger ♪ to extends the previous image but to make things easier we just copied files.
-
-So here the image directory structure:
-
- - **multiple-process-image**: root directory
- - **multiple-process-image/service**: directory to store the nginx and php5-fpm service.
- - **multiple-process-image/environment**: environment files directory.
- - **multiple-process-image/Dockerfile**: the Dockerfile to build this image.
-
-**service** and **environment** directories name are arbitrary and can be changed but make sure to adapt their name in the Dockerfile.
-
-Let's now create the nginx and php5-fpm directories:
-
- - **multiple-process-image/service/nginx**: nginx root directory
- - **multiple-process-image/service/nginx/install.sh**: service installation script.
- - **multiple-process-image/service/nginx/startup.sh**:  startup script to setup the service when the container start.
- - **multiple-process-image/service/nginx/process.sh**: process to run.
-
- - **multiple-process-image/service/php5-fpm**: php5-fpm root directory
- - **multiple-process-image/service/php5-fpm/install.sh**: service installation script.
- - **multiple-process-image/service/php5-fpm/process.sh**: process to run.
- - **multiple-process-image/service/php5-fpm/config/default**: default nginx server config with
-
-#### Dockerfile
-
-In the Dockerfile we are going to:
-  - Add the multiple process stack
-  - Download nginx and php5-fpm from apt-get.
-  - Add the service directory to the image.
-  - Install service and clean up.
-  - Add the environment directory to the image.
-  - Define ports exposed and volumes if needed.
-
-
-        # Use osixia/light-baseimage
-        # https://github.com/osixia/docker-light-baseimage
-        FROM osixia/light-baseimage:0.2.6
-        MAINTAINER Your Name <your@name.com>
-
-        # Install multiple process stack, nginx and php5-fpm and clean apt-get files
-        # https://github.com/osixia/docker-light-baseimage/blob/stable/image/tool/add-multiple-process-stack
-        RUN apt-get -y update \
-            && /container/tool/add-multiple-process-stack \
-            && LC_ALL=C DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-               nginx \
-               php5-fpm \
-            && apt-get clean \
-            && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-
-        # Add service directory to /container/service
-        ADD service /container/service
-
-        # Use baseimage install-service script
-        # https://github.com/osixia/docker-light-baseimage/blob/stable/image/tool/install-service
-        RUN /container/tool/install-service
-
-        # Add default env directory
-        ADD environment /container/environment/99-default
-
-        # Set /var/www/ in a data volume
-        VOLUME /var/www/
-
-        # Expose default http and https ports
-        EXPOSE 80 443
-
-
-The Dockerfile contains directives to download nginx and php5-fpm from apt-get but all the initial setup will take place in install.sh file (called by /container/tool/install-service tool) for a better build experience. The time consuming download task is decoupled from the initial setup to make great use of docker build cache. If an install.sh file is changed the builder will not have to download again nginx and php5-fpm add will just run install scripts.
-
-Maybe you already read that in the previous example ?Sorry.
-
-#### Service files
-
-Please refer to [single process image](#create-a-single-process-image) for the nginx service files description. Here just php5-fpm files are described.
-
-##### install.sh
-
-This file must only contains directives for the service initial setup. Files download and apt-get command takes place in the Dockerfile for a better image building experience (see [Dockerfile](#dockerfile-1) ).
-
-In this example, for the initial setup we set some php5-fpm default configuration, replace the default nginx server config and add phpinfo.php file:
-
-    #!/bin/bash -e
-    # this script is run during the image build
-
-    # config
-    sed -i -e "s/expose_php = On/expose_php = Off/g" /etc/php5/fpm/php.ini
-    sed -i -e "s/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g" /etc/php5/fpm/php.ini
-    sed -i -e "s/;listen.owner = www-data/listen.owner = www-data/g" /etc/php5/fpm/pool.d/www.conf
-    sed -i -e "s/;listen.group = www-data/listen.group = www-data/g" /etc/php5/fpm/pool.d/www.conf
-
-    # replace default website with php5-fpm default website
-    cp -f /container/service/php5-fpm/config/default /etc/nginx/sites-available/default
-
-    # create phpinfo.php
-    echo "<?php phpinfo(); " > /var/www/html/phpinfo.php
-
-
-Make sure install.sh can be executed (chmod +x install.sh).
-
-##### process.sh
-
-This file define the command to run:
-
-    #!/bin/bash -e
-    exec /usr/sbin/php5-fpm --nodaemonize
-
-Make sure process.sh can be executed (chmod +x process.sh).
-
-*Caution: The command executed must start a foreground process otherwise runit (use to supervise mutlple process images) will  keep restarting php5-fpm.*
-
-That why we run php5-fpm with `--nodaemonize"`
-
-##### config/default
-nginx server configuration:
-
-      server {
-      	listen 80 default_server;
-      	listen [::]:80 default_server;
-
-      	root /var/www/html;
-
-      	# Add index.php to the list if you are using PHP
-      	index index.html index.htm index.nginx-debian.html;
-
-      	server_name _;
-
-      	location / {
-      		# First attempt to serve request as file, then
-      		# as directory, then fall back to displaying a 404.
-      		try_files $uri $uri/ =404;
-      	}
-
-      	location ~ \.php$ {
-      		fastcgi_split_path_info ^(.+\.php)(/.+)$;
-      		# With php5-fpm:
-      		fastcgi_pass unix:/var/run/php5-fpm.sock;
-      		fastcgi_index index.php;
-      		include fastcgi_params;
-      		include fastcgi.conf;
-      	}
-      }
-
-That's it we have a multiple process image that run nginx and php5-fpm!
-
-#### Build and test
-
-
-Build the image:
-
-    docker build -t example/multiple-process --rm .
-
-Start a new container:
-
-    docker run -p 8080:80 example/multiple-process
-
-Go to [http://localhost:8080/phpinfo.php](http://localhost:8080/phpinfo.php)
-
-> phpinfo should be printed
-
-So we have a container with two process supervised by runit running in our container!
-
 
 ## Images Based On Light-Baseimage
 
 Single process images:
-- [osixia/openldap](https://github.com/osixia/docker-openldap)
-- [osixia/keepalived](https://github.com/osixia/docker-keepalived)
-- [osixia/tinc](https://github.com/osixia/docker-tinc)
-- [osixia/registry-ldap-auth](https://github.com/osixia/docker-registry-ldap-auth)
-- [osixia/cfssl-multirootca](https://github.com/osixia/docker-cfssl-multirootca)
-- [osixia/backup](https://github.com/osixia/docker-backup)
-- [osixia/backup-manager](https://github.com/osixia/docker-backup-manager)
-- [osixia/mmc-agent](https://github.com/osixia/docker-mmc-agent)
-
-Multiple process images:
-- [osixia/openldap-backup](https://github.com/osixia/docker-openldap-backup)
-- [osixia/mariadb](https://github.com/osixia/docker-mariadb)
-- [osixia/wordpress](https://github.com/osixia/docker-wordpress)
-- [osixia/roundcube](https://github.com/osixia/docker-roundcube)
-- [osixia/piwik](https://github.com/osixia/docker-piwik)
-- [osixia/phpMyAdmin](https://github.com/osixia/docker-phpMyAdmin)
-- [osixia/phpLDAPadmin](https://github.com/osixia/docker-phpLDAPadmin)
-- [osixia/keepalived-confd](https://github.com/osixia/docker-keepalived-confd)
-- [osixia/tinc-etcd](https://github.com/osixia/docker-tinc-etcd)
-- [osixia/postfix-gateway-confd](https://github.com/osixia/docker-postfix-gateway-confd)
-- [osixia/mmc-mail](https://github.com/osixia/docker-mmc-mail)
-- [osixia/mmc-web](https://github.com/osixia/docker-mmc-web)
+- [zeroae/ap-your-image-here](https://github.com/zeroae/your-image-here)
 
 Image adding light-baseimage tools to an existing image
 - [osixia/gitlab](https://github.com/osixia/docker-gitlab)
@@ -563,10 +367,6 @@ All container tools are available in `/container/tool` directory and are linked 
 
 | Name        | Description |
 | ---------------- | ------------------- |
-| :runit | Replaces Debian's Upstart. Used for service supervision and management. Much easier to use than SysV init and supports restarting daemons when they crash. Much easier to use and more lightweight than Upstart. <br><br>*This service is part of the multiple-process-stack.*|
-| :cron | Cron daemon. <br><br>*This service is part of the multiple-process-stack.*|
-| :syslog-ng-core | Syslog daemon so that many services - including the kernel itself - can correctly log to /var/log/syslog. If no syslog daemon is running, a lot of important messages are silently swallowed. <br><br>Only listens locally. All syslog messages are forwarded to "docker logs".<br><br>*This service is part of the multiple-process-stack.* |
-| :logrotate | Rotates and compresses logs on a regular basis. <br><br>*This service is part of the multiple-process-stack.*|
 | :ssl-tools | Add CFSSL a CloudFlare PKI/TLS swiss army knife. It's a command line tool for signing, verifying, and bundling TLS certificates. Comes with cfssl-helper tool that make it docker friendly by taking command line parameters from environment variables. <br><br>Also add jsonssl-helper to get certificates from json files, parameters are set by environment variables. |
 
 

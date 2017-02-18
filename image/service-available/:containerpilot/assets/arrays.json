@@ -1,0 +1,7 @@
+{
+    "services": [ ],
+    "backends": [ ],
+    "tasks" : [ ],
+    "coprocesses": [ ],
+    "telemetry": { "sensors": [ ] }
+}

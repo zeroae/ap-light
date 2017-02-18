@@ -1,7 +1,17 @@
 FROM debian:jessie
-MAINTAINER Bertrand Gouny <bertrand.gouny@osixia.net>
+MAINTAINER Patrick Sodré <sodre@zeroae.co>
 
-ADD . /container
+ADD file /container/file
+ADD tool /container/tool
+
+ADD build.sh /container/build.sh
 RUN /container/build.sh
 
-ENTRYPOINT ["/container/tool/run"]
+ADD service-available /container/service-available
+RUN /container/tool/add-service-available :containerpilot
+
+ENV CONTAINERPILOT="file:///etc/containerpilot.json"
+VOLUME [ "/var/lib/consul" ]
+
+#ENTRYPOINT ["/container/tool/run"]
+#ENTRYPOINT ["/sbin/containerpilot"]

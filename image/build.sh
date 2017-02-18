@@ -39,7 +39,7 @@ dpkg-divert --local --rename --add /usr/bin/ischroot
 ln -sf /bin/true /usr/bin/ischroot
 
 ## Install apt-utils.
-$MINIMAL_APT_GET_INSTALL apt-utils python locales
+$MINIMAL_APT_GET_INSTALL apt-utils python locales curl unzip ca-certificates jq
 
 ## Upgrade all packages.
 apt-get dist-upgrade -y --no-install-recommends

@@ -1,0 +1,8 @@
+{
+  "data_dir": "/var/lib/consul",
+  "disable_update_check": true,
+  "ports": {
+    "dns": 53
+  },
+  "recursor": "{{ if .CONSUL_DNS_RECURSOR }}{{ .CONSUL_DNS_RECURSOR }}{{ else }}8.8.8.8{{ end }}"
+}

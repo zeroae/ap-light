@@ -1,5 +1,5 @@
-NAME = osixia/light-baseimage
-VERSION = 0.2.6
+NAME = zeroae/ap-light
+VERSION = 0.0.1
 
 .PHONY: all build build-nocache test tag_latest release
 

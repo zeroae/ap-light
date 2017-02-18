@@ -1,0 +1,4 @@
+{
+    "preStart" : "containerpilot-runonce",
+    "consul" : "localhost:8500"
+}
