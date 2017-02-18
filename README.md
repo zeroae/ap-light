@@ -1,4 +1,4 @@
-# zeroae/ap-light-baseimage
+# zeroae/ap-light
 
 [![Docker Pulls](https://img.shields.io/docker/pulls/osixia/light-baseimage.svg)][hub]
 [![Docker Stars](https://img.shields.io/docker/stars/osixia/light-baseimage.svg)][hub]
