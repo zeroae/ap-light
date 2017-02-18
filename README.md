@@ -12,7 +12,7 @@ Latest release: 0.0.1 -  [Changelog](CHANGELOG.md)
 A Debian Jessie based docker image to build reliable autopilot based images quickly. This image provides a simple opinionated solution to build single process image with minimum of layers and an optimized build.
 
 The aims of this image is to be used as a base for your own Docker images. It's based on the awesome work of: 
-- [osixia/light-baseimage](https://github.com/osixia/light-baseimage)
+- [osixia/docker-light-baseimage](https://github.com/osixia/docker-light-baseimage)
 - [joyent/containerpilot](https://github.com/joyent/containerpilot)
 
 Table of Contents
@@ -57,7 +57,7 @@ Table of Contents
 If you find this image useful here's how you can help:
 
 - Send a pull request with your kickass new features and bug fixes
-- Help new users with [issues](https://github.com/osixia/docker-openldap/issues) they may encounter
+- Help new users with [issues](https://github.com/zeroae/ap-light-baseimage/issues) they may encounter
 - Support the development of this image and star this repo!
 
 ## Overview
