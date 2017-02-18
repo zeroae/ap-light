@@ -1,21 +1,22 @@
 # zeroae/ap-light
 
-[![Docker Pulls](https://img.shields.io/docker/pulls/osixia/light-baseimage.svg)][hub]
-[![Docker Stars](https://img.shields.io/docker/stars/osixia/light-baseimage.svg)][hub]
-[![](https://images.microbadger.com/badges/image/osixia/light-baseimage.svg)](http://microbadger.com/images/osixia/light-baseimage "Get your own image badge on microbadger.com")
+[![Docker Pulls](https://img.shields.io/docker/pulls/zeroae/ap-light.svg)][hub]
+[![Docker Stars](https://img.shields.io/docker/stars/zeroae/ap-light.svg)][hub]
+[![](https://images.microbadger.com/badges/image/zeroae/ap-light.svg)](http://microbadger.com/images/zeroae/ap-light "Get your own image badge on microbadger.com")
 
-[hub]: https://hub.docker.com/r/osixia/light-baseimage/
+[hub]: https://hub.docker.com/r/zeroae/ap-light/
 
 Latest release: 0.0.1 -  [Changelog](CHANGELOG.md)
  | [Docker Hub](https://hub.docker.com/r/osixia/light-baseimage/) 
 
-A Debian Jessie based docker image to build reliable autopilot based images quickly. This image provides a simple opinionated solution to build single process image with minimum of layers and an optimized build.
+A Debian Jessie based image to quickly build reliable images based on Joyent's ContainerPilot pattern. This image provides a simple opinionated solution to build single process image with minimum of layers and an optimized build.
 
 The aims of this image is to be used as a base for your own Docker images. It's based on the awesome work of: 
+- [phusion/baseimage-docker](https://github.com/phusion/baseimage-docker)
 - [osixia/docker-light-baseimage](https://github.com/osixia/docker-light-baseimage)
 - [joyent/containerpilot](https://github.com/joyent/containerpilot)
 
-Table of Contents
+## Table of Contents
 - [Contributing](#contributing)
 - [Overview](#overview)
 - [Quick Start](#quick-start)
@@ -57,7 +58,7 @@ Table of Contents
 If you find this image useful here's how you can help:
 
 - Send a pull request with your kickass new features and bug fixes
-- Help new users with [issues](https://github.com/zeroae/ap-light-baseimage/issues) they may encounter
+- Help new users with [issues](https://github.com/zeroae/ap-light/issues) they may encounter
 - Support the development of this image and star this repo!
 
 ## Overview
