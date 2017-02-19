@@ -1,7 +1,11 @@
 #!/usr/bin/python -u
-import os, os.path, subprocess
+import os, os.path, shutil, subprocess
+from glob import glob
+
 
 SERVICE_DIR = "/container/service"
+GLOBAL_CONSUL_DIR = "/etc/consul.d"
+GLOBAL_CONTAINERPILOT_DIR = "/etc/containerpilot.d"
 INSTALL_FILENAME = "install.sh"
 PROCESS_FILENAME = "process.sh"
 nb_process = 0
@@ -15,18 +19,29 @@ if os.path.isfile(SERVICE_DIR + os.sep + INSTALL_FILENAME):
     print("remove " + SERVICE_DIR + os.sep + INSTALL_FILENAME + "\n")
     os.remove(SERVICE_DIR + os.sep + INSTALL_FILENAME)
 
-# Process install script of services in /container/service
+# For each service in /container/service
+#   - execute install script
+#   - copy consul.d and containerpilot.d config files
 for service in sorted(os.listdir(SERVICE_DIR)):
 
-    if os.path.isfile(SERVICE_DIR + os.sep + service + os.sep + INSTALL_FILENAME):
-        print("run " + SERVICE_DIR + os.sep + service + os.sep + INSTALL_FILENAME)
-        subprocess.call([SERVICE_DIR + os.sep + service + os.sep + INSTALL_FILENAME],shell=True)
+    install_file=os.path.join(SERVICE_DIR, service, INSTALL_FILENAME)
+    if os.path.isfile(install_file):
+        print("run " + install_file)
+        subprocess.call([install_file],shell=True)
 
-        print("remove " + SERVICE_DIR + os.sep + service + os.sep + INSTALL_FILENAME)
-        os.remove(SERVICE_DIR + os.sep + service + os.sep + INSTALL_FILENAME)
+        print("remove " + install_file)
+        os.remove(install_file)
 
-    if os.path.isfile(SERVICE_DIR + os.sep + service + os.sep + PROCESS_FILENAME):
+    src_dst_dirs = [ (os.path.join(SERVICE_DIR, service, os.path.basename(dst_dir)), dst_dir)
+                        for dst_dir in [ GLOBAL_CONSUL_DIR, GLOBAL_CONTAINERPILOT_DIR ] ]
+    for (src, dst) in src_dst_dirs:
+        for src_file in glob(os.path.join(src, '*')):
+            shutil.copy2(src_file, dst)
+
+    process_file=os.path.join(SERVICE_DIR, service, PROCESS_FILENAME)
+    if os.path.isfile(process_file):
         nb_process += 1
+
 
 
 print(str(nb_process) + " process found.")
