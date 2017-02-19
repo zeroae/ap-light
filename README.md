@@ -6,7 +6,7 @@
 
 [hub]: https://hub.docker.com/r/zeroae/ap-light/
 
-Latest release: 0.0.1 -  [Changelog](CHANGELOG.md)
+Latest release: 0.1.0 -  [Changelog](CHANGELOG.md)
  | [Docker Hub](https://hub.docker.com/r/zeroae/ap-light/) 
 
 A Debian Jessie based image to quickly build reliable images based on Joyent's ContainerPilot pattern. This image provides a simple opinionated solution to build single process image with minimum of layers and an optimized build.
@@ -93,10 +93,14 @@ But this will be dealt with in the following section.
 This section define a service directory that can be added in /container/service or /container/service-available.
 
 - **my-service**: root directory
+- **my-service/containerpilot.d**: containerpilot configuration JSON files (.json) or templates (.json.cptmpl).
+- **my-service/consul.d**: consul agent configuration JSON files (not mandatory)
 - **my-service/install.sh**: install script (not mandatory).
+<!--
 - **my-service/startup.sh**: startup script to setup the service when the container start (not mandatory).
 - **my-service/process.sh**: process to run (not mandatory).
 - **my-service/finish.sh**: finish script run when the process script exit (not mandatory).
+-->
 - **my-service/...** add whatever you need!
 
 Ok that's pretty all to know to start building our first images!

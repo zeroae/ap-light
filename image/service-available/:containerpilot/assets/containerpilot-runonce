@@ -1,6 +1,5 @@
 #!/bin/sh -e
 install-service
 containerpilot-render
-rm -f /sbin/containerpilot-runonce
-rm -f /container/tool/containerpilot-runonce
+rm -f /sbin/containerpilot-runonce /container/tool/containerpilot-runonce
 kill -s HUP 1

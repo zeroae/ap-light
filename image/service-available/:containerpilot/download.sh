@@ -27,8 +27,6 @@ function download_consul()
     mkdir -p /var/lib/consul
     mkdir -p /etc/consul.d
 
-    mv $DIR/assets/consul.json.cptmpl /etc/consul.d/00_base.json.cptmpl
-
     ln -s /container/tool/consul /sbin
 }
 
