@@ -360,6 +360,7 @@ All container tools are available in `/container/tool` directory and are linked 
 
 | Filename        | Description |
 | ---------------- | ------------------- |
+| ap-spin | A tool that spins, it is default application executed by containerpilot. |
 | run | The run tool is defined as the image ENTRYPOINT (see [Dockerfile](image/Dockerfile)). It set environment and run  startup scripts and images process. More information in the [Advanced User Guide](#run). |
 | setuser | A tool for running a command as another user. Easier to use than su, has a smaller attack vector than sudo, and unlike chpst this tool sets $HOME correctly.|
 | log-helper | A simple bash tool to print message base on the log level. |

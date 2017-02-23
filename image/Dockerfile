@@ -13,5 +13,4 @@ RUN /container/tool/add-service-available :containerpilot
 ENV CONTAINERPILOT="file:///etc/containerpilot.json"
 VOLUME [ "/var/lib/consul" ]
 
-#ENTRYPOINT ["/container/tool/run"]
-#ENTRYPOINT ["/sbin/containerpilot"]
+CMD ["containerpilot", "ap-spin"]
