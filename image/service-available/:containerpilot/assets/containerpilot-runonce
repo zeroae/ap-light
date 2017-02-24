@@ -1,5 +1,15 @@
-#!/bin/sh -e
+#!/bin/bash -e
+
+rm -f /sbin/containerpilot-runonce /container/tool/containerpilot-runonce
+
 install-service
 containerpilot-render
-rm -f /sbin/containerpilot-runonce /container/tool/containerpilot-runonce
+
+# Chain into the new preStart
+eval $(jq '.preStart' /etc/containerpilot.json | sed 's/"//g')
+rv=$?
+
+# Reload config
 kill -s HUP 1
+
+exit $rv

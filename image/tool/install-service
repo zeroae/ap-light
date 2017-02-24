@@ -10,6 +10,15 @@ INSTALL_FILENAME = "install.sh"
 PROCESS_FILENAME = "process.sh"
 nb_process = 0
 
+def mkdir(dir_name):
+    try:
+        os.mkdir(dir_name)
+    except OSError:
+        pass
+
+mkdir(GLOBAL_CONSUL_DIR)
+mkdir(GLOBAL_CONTAINERPILOT_DIR)
+
 print("install-service")
 # Auto run global install script if available
 if os.path.isfile(SERVICE_DIR + os.sep + INSTALL_FILENAME):

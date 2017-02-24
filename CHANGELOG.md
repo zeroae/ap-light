@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.0
+    - Added consul-agent as an available-service. Use "ap-add-service :consul-agent" to add it to your image.
+    - Fixed bug where preStart was not being called.
+
 ## 0.2.0
     - Added ap-spin script that just spins, this is the default containerpilot process.
     - Users should use "coprocess" to spin up the individual services.

@@ -8,7 +8,7 @@ ADD build.sh /container/build.sh
 RUN /container/build.sh
 
 ADD service-available /container/service-available
-RUN /container/tool/add-service-available :containerpilot
+RUN /container/tool/ap-add-service :containerpilot
 
 ENV CONTAINERPILOT="file:///etc/containerpilot.json"
 VOLUME [ "/var/lib/consul" ]

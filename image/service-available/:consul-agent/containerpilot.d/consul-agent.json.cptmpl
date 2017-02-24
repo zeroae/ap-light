@@ -1,0 +1,15 @@
+{
+  "consul": "localhost:8500",
+  "coprocesses": [
+    {
+      "name": "consul-agent (host:{{ .CONSUL }})",
+      "command": ["consul", "agent",
+                  "-config-dir=/etc/consul.d",
+                  "-rejoin",
+                  "-retry-join", "{{ .CONSUL }}",
+                  "-retry-max", "10",
+                  "-retry-interval", "10s"],
+      "restarts": "unlimited"
+    }
+  ]
+}
