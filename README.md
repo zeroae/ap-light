@@ -154,9 +154,9 @@ In the Dockerfile we are going to:
         # Add service directory to /container/service
         ADD service /container/service
 
-        # Use baseimage install-service script
-        # https://github.com/osixia/docker-light-baseimage/blob/stable/image/tool/install-service
-        RUN /container/tool/install-service
+        # Use baseimage ap-service-install script
+        # https://github.com/osixia/docker-light-baseimage/blob/stable/image/tool/ap-service-install
+        RUN /container/tool/ap-service-install
 
         # Add default env directory
         ADD environment /container/environment/99-default
@@ -168,7 +168,7 @@ In the Dockerfile we are going to:
         EXPOSE 80 443
 
 
-The Dockerfile contains directives to download nginx from apt-get but all the initial setup will take place in install.sh file (called by /container/tool/install-service tool) for a better build experience. The time consuming download task is decoupled from the initial setup to make great use of docker build cache. If install.sh file is changed the builder won't have to download again nginx, and will just run install scripts.
+The Dockerfile contains directives to download nginx from apt-get but all the initial setup will take place in install.sh file (called by /container/tool/ap-service-install tool) for a better build experience. The time consuming download task is decoupled from the initial setup to make great use of docker build cache. If install.sh file is changed the builder won't have to download again nginx, and will just run install scripts.
 
 #### Service files
 
@@ -360,14 +360,13 @@ All container tools are available in `/container/tool` directory and are linked 
 
 | Filename        | Description |
 | ---------------- | ------------------- |
+| ap-service-add | A tool to download and add services in service-available directory to the regular service directory. |
+| ap-service-install | A tool that execute /container/service/install.sh and /container/service/\*/install.sh scripts. |
 | ap-spin | A tool that spins, it is default application executed by containerpilot. |
+| log-helper | A simple bash tool to print message base on the log level. |
 | run | The run tool is defined as the image ENTRYPOINT (see [Dockerfile](image/Dockerfile)). It set environment and run  startup scripts and images process. More information in the [Advanced User Guide](#run). |
 | setuser | A tool for running a command as another user. Easier to use than su, has a smaller attack vector than sudo, and unlike chpst this tool sets $HOME correctly.|
-| log-helper | A simple bash tool to print message base on the log level. |
-|  add-service-available | A tool to download and add services in service-available directory to the regular service directory. |
-| add-multiple-process-stack | A tool to add the multiple process stack: runit, cron syslog-ng-core and logrotate. |
-| install-service | A tool that execute /container/service/install.sh and /container/service/\*/install.sh scripts. |
-|  complex-bash-env | A tool to iterate trough complex bash environment variables created by the run tool when a table or a list was set in environment files or in environment command line argument. |
+| complex-bash-env | A tool to iterate trough complex bash environment variables created by the run tool when a table or a list was set in environment files or in environment command line argument. |
 
 ### Services available
 
@@ -382,7 +381,7 @@ All container tools are available in `/container/tool` directory and are linked 
 
 A service-available is basically a normal service expect that it is in the `service-available` directory and have a `download.sh` file.
 
-To add a service-available to the current image use the `add-service-available` tool. It will process the download.sh file of services given in argument and move them to the regular service directory (/container/service).
+To add a service-available to the current image use the `ap-service-add` tool. It will process the download.sh file of services given in argument and move them to the regular service directory (/container/service).
 
 After that the service-available will be process like regular services.
 
@@ -394,18 +393,18 @@ Here simple Dockerfile example how to add a service-available to an image:
         MAINTAINER Your Name <your@name.com>
 
         # Add cfssl and cron service-available
-        # https://github.com/osixia/docker-light-baseimage/blob/stable/image/tool/add-service-available
+        # https://github.com/osixia/docker-light-baseimage/blob/stable/image/tool/ap-service-add
         # https://github.com/osixia/docker-light-baseimage/blob/stable/image/service-available/:ssl-tools/download.sh
         # https://github.com/osixia/docker-light-baseimage/blob/stable/image/service-available/:cron/download.sh
         RUN apt-get -y update \
-            && /container/tool/add-service-available :ssl-tools :cron \
+            && /container/tool/ap-service-add :ssl-tools :cron \
             && LC_ALL=C DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
                nginx \
                php5-fpm
         ...
 
 
-Note: Most of predefined service available start with a `:` to make sure they are installed before regular services (so they can be used by regular services). The install-service tool process services in /container/service in alphabetical order.
+Note: Most of predefined service available start with a `:` to make sure they are installed before regular services (so they can be used by regular services). The `ap-service-install` tool process services in /container/service in alphabetical order.
 
 To create a service-available just create a regular service, add a download.sh file to set how the needed content is downloaded and add it to /container/service-available directory. The download.sh script is not mandatory if nothing need to be downloaded.
 

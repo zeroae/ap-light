@@ -13,7 +13,7 @@ ADD build.sh /container/build.sh
 RUN /container/build.sh
 
 ADD service-available /container/service-available
-RUN /container/tool/ap-add-service :containerpilot
+RUN /container/tool/ap-service-add :containerpilot
 
 VOLUME [ "/var/lib/consul", "/container/run/state" ]
 
