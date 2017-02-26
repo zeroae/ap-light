@@ -2,9 +2,9 @@
 
 rm -f /sbin/containerpilot-runonce /container/tool/containerpilot-runonce
 
-install-service
-containerpilot-render
+mkdir -p $AP_STATE_DIR
 
+containerpilot-render
 # Chain into the new preStart
 eval $(jq '.preStart' /etc/containerpilot.json | sed 's/"//g')
 rv=$?

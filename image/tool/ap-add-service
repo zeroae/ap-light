@@ -3,8 +3,8 @@
 # Usage :
 # RUN /container/tool/ap-add-service [service1] [service2] ...
 
-SERVICE_DIR="/container/service"
-SERVICE_AVAILABLE_DIR="/container/service-available"
+SERVICE_DIR=$AP_SERVICE_DIR
+SERVICE_AVAILABLE_DIR="$AP_SERVICE_DIR-available"
 DOWNLOAD_FILENAME="download.sh"
 
 for i in $@
