@@ -1,6 +1,7 @@
 {
   "data_dir": "/var/lib/consul",
   "disable_update_check": true,
+  "domain": "{{ if .CONSUL_DOMAIN }}{{ .CONSUL_DOMAIN }}{{ else }}consul{{ end }}",
   "ports": {
     "dns": 53
   },
