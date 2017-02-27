@@ -1,5 +1,7 @@
 #!/bin/bash -e
 
+log-helper info 'Rendering /etc/containerpilot.d...'
+
 arrays_json=/container/service/:containerpilot/assets/arrays.json
 # Render a ContainerPilot Template file.
 function render_template() {

@@ -1,15 +1,29 @@
 #!/bin/bash -e
 
-rm -f /sbin/containerpilot-runonce /container/tool/containerpilot-runonce
+log-helper info "run-once started..."
+
 
 mkdir -p $AP_STATE_DIR
 
+# Execute run-once for all installed services
+for i in $(find $AP_SERVICE_DIR -type f -wholename '*/runonce.*'); do
+    log-helper info "Executing $i..."
+    $i
+    log-helper info "Removing $i..."
+    rm -f $i
+done
+
+# Render
 containerpilot-render
+
 # Chain into the new preStart
+log-helper info "Chaining into new Prestart..."
 eval $(jq '.preStart' /etc/containerpilot.json | sed 's/"//g')
 rv=$?
 
 # Reload config
 kill -s HUP 1
+
+rm -f /sbin/containerpilot-runonce /container/tool/containerpilot-runonce
 
 exit $rv
