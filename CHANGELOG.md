@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.4.0
+    - Added configuration options for CONSUL_{DOMAIN,DATACENTER,ACL_{DATACENTER,TOKEN}}.
+    - Execute `runonce.sh` in the service directory before preStart.
+    - Renamed tools to follow the ap-{tool-name} pattern.
+    - Added AP_{STATE,SERVICE}_DIR environment variables.
+
 ## 0.3.0
     - Added consul-agent as an available-service. Use "ap-add-service :consul-agent" to add it to your image.
     - Fixed bug where preStart was not being called.
