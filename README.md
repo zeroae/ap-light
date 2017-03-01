@@ -6,7 +6,7 @@
 
 [hub]: https://hub.docker.com/r/zeroae/ap-light/
 
-Latest release: 0.4.0 -  [Changelog](CHANGELOG.md)
+Latest release: 0.5.0 -  [Changelog](CHANGELOG.md)
  | [Docker Hub](https://hub.docker.com/r/zeroae/ap-light/) 
 
 A Debian Jessie based image to quickly build reliable images based on Joyent's ContainerPilot pattern. This image provides a simple opinionated solution to build single process image with minimum of layers and an optimized build.

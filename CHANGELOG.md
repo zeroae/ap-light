@@ -1,5 +1,7 @@
 # Changelog
 
+## 0.5.0
+
 ## 0.4.0
     - Added configuration options for CONSUL_{DOMAIN,DATACENTER,ACL_{DATACENTER,TOKEN}}.
     - Execute `runonce.sh` in the service directory before preStart.
