@@ -1,7 +1,10 @@
 {
+  {{ if .CONSUL_ACL_DATACENTER }}"acl_datacenter" : "{{ .CONSUL_ACL_DATACENTER }}",{{ end }}
+  {{ if .CONSUL_ACL_TOKEN }}"acl_token" : "{{ .CONSUL_ACL_TOKEN }}",{{ end }}
+  {{ if .CONSUL_DATACENTER }}"datacenter": "{{ .CONSUL_DATACENTER }}",{{ end }}
+  {{ if .CONSUL_DOMAIN }}"domain": "{{ .CONSUL_DOMAIN }}",{{end}}
   "data_dir": "/var/lib/consul",
   "disable_update_check": true,
-  "domain": "{{ if .CONSUL_DOMAIN }}{{ .CONSUL_DOMAIN }}{{ else }}consul{{ end }}",
   "ports": {
     "dns": 53
   },
