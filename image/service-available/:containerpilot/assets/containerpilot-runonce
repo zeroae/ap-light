@@ -6,7 +6,7 @@ log-helper info "run-once started..."
 mkdir -p $AP_STATE_DIR
 
 # Execute run-once for all installed services
-for i in $(find $AP_SERVICE_DIR -type f -wholename '*/runonce.*'); do
+for i in $(find $AP_SERVICE_DIR -type f -wholename '*/runonce.*' | sort); do
     log-helper info "Executing $i..."
     $i
     log-helper info "Removing $i..."
