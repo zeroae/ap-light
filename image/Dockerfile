@@ -2,6 +2,7 @@ FROM debian:jessie
 MAINTAINER Patrick Sodré <sodre@zeroae.co>
 
 ENV \
+    AP_ROOT="/container" \
     AP_SERVICE_DIR="/container/service" \
     AP_STATE_DIR="/container/run/state" \
     CONTAINERPILOT="file:///etc/containerpilot.json"

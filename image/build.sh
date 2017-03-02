@@ -59,6 +59,7 @@ cd /container/file/PyYAML-3.11/
 python setup.py install
 cd -
 
+apt-get autoremove -y
 apt-get clean
 rm -rf /tmp/* /var/tmp/*
 rm -rf /var/lib/apt/lists/*

@@ -1,0 +1,13 @@
+#!/bin/bash
+
+dns=$(curl -s ${CONSUL}:8500/v1/status/leader | sed -e 's/"//g' -e 's/:.*//')
+cp -f /etc/resolv.conf /etc/resolv.conf.bck
+cat /etc/resolv.conf.bck | sed -e "s/nameserver .*/nameserver $dns/" > /etc/resolv.conf
+
+mantash $@
+rv=$?
+
+cp -f /etc/resolv.conf.bck /etc/resolv.conf
+
+exit $rv
+
