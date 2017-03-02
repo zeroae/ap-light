@@ -1,6 +1,9 @@
 # Changelog
 
 ## 0.5.0
+    - Runonce now runs the scripts in the correct order.
+    - Added manta library to service-available.
+    - Consul agent waits until there is a leader before continuing.
 
 ## 0.4.0
     - Added configuration options for CONSUL_{DOMAIN,DATACENTER,ACL_{DATACENTER,TOKEN}}.
