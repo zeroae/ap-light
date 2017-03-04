@@ -6,6 +6,7 @@
       "command": ["consul", "agent",
                   "-config-dir=/etc/consul.d",
                   "-rejoin",
+                  "-log-level", "err",
                   "-retry-join", "{{ .CONSUL }}",
                   "-retry-max", "10",
                   "-retry-interval", "10s"],
