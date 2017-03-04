@@ -1,5 +1,5 @@
 NAME = zeroae/ap-light
-VERSION = 0.5.0
+VERSION = 0.6.0
 
 .PHONY: all build build-nocache test tag_latest release
 

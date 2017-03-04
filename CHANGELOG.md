@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.6.0 (unreleased)
+## 0.6.0
     - Moved AP_ROOT to /opt/ap
     - Preprend /opt/ap/bin to PATH
     - Automatically move my-service/bin into opt/ap/bin
