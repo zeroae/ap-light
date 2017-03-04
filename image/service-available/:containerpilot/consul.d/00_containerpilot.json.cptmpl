@@ -3,6 +3,7 @@
   {{ if .CONSUL_ACL_TOKEN }}"acl_token" : "{{ .CONSUL_ACL_TOKEN }}",{{ end }}
   {{ if .CONSUL_DATACENTER }}"datacenter": "{{ .CONSUL_DATACENTER }}",{{ end }}
   {{ if .CONSUL_DOMAIN }}"domain": "{{ .CONSUL_DOMAIN }}",{{end}}
+  "node": "{{ .HOSTNAME }}",
   "data_dir": "/var/lib/consul",
   "disable_update_check": true,
   "ports": {
