@@ -4,6 +4,9 @@
     - Runonce now runs the scripts in the correct order.
     - Added manta library to service-available.
     - Consul agent waits until there is a leader before continuing.
+    - Moved AP_ROOT to /opt/ap
+    - Preprent /opt/ap/bin to PATH
+    - Automatically move my-service/bin into opt/ap/bin
 
 ## 0.4.0
     - Added configuration options for CONSUL_{DOMAIN,DATACENTER,ACL_{DATACENTER,TOKEN}}.

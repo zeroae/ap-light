@@ -2,7 +2,7 @@
 
 log-helper info 'Rendering containerpilot templates (cptmpl)'
 
-arrays_json=/container/service/:containerpilot/assets/arrays.json
+arrays_json=$AP_SERVICE_DIR/:containerpilot/assets/arrays.json
 # Render a ContainerPilot Template file.
 function render_template() {
     in_file=$1

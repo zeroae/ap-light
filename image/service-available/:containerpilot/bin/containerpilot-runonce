@@ -2,7 +2,6 @@
 
 log-helper info "run-once started..."
 
-
 mkdir -p $AP_STATE_DIR
 
 # Execute run-once for all installed services
@@ -24,6 +23,6 @@ rv=$?
 # Reload config
 kill -s HUP 1
 
-rm -f /sbin/containerpilot-runonce /container/tool/containerpilot-runonce
+rm -f $AP_ROOT/bin/containerpilot-runonce
 
 exit $rv
