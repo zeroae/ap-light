@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-log-helper info 'Rendering /etc/containerpilot.d...'
+log-helper info 'Rendering containerpilot templates (cptmpl)'
 
 arrays_json=/container/service/:containerpilot/assets/arrays.json
 # Render a ContainerPilot Template file.
@@ -12,9 +12,11 @@ function render_template() {
 }
 export -f render_template
 
+log-helper info 'Rendering /etc/consul.d...'
 cd /etc/consul.d
 find . -type f -name '*.json.cptmpl' -exec bash -c 'render_template "$0"' {} \;
 
+log-helper info 'Rendering /etc/containerpilot.d...'
 cd /etc/containerpilot.d
 find . -type f -name '*.json.cptmpl' -exec bash -c 'render_template "$0"' {} \;
 
