@@ -1,21 +1,23 @@
 FROM debian:jessie
 MAINTAINER Patrick Sodré <sodre@zeroae.co>
 
+ENV AP_ROOT="/opt/ap"
 ENV \
-    AP_ROOT="/container" \
-    AP_SERVICE_DIR="/container/service" \
-    AP_STATE_DIR="/container/run/state" \
+    AP_SERVICE_DIR="${AP_ROOT}/service" \
+    AP_STATE_DIR="${AP_ROOT}/run/state" \
+    PATH=${AP_ROOT}/bin:${PATH}             \
     CONTAINERPILOT="file:///etc/containerpilot.json"
 
-ADD file /container/file
-ADD tool /container/tool
+ADD file ${AP_ROOT}/file
+ADD bin ${AP_ROOT}/bin
 
-ADD build.sh /container/build.sh
-RUN /container/build.sh
+ADD build.sh ${AP_ROOT}/build.sh
+RUN /opt/ap/build.sh
 
-ADD service-available /container/service-available
-RUN /container/tool/ap-service-add :containerpilot
+ADD service-available ${AP_ROOT}/service-available
 
-VOLUME [ "/var/lib/consul", "/container/run/state" ]
+RUN ap-service-add :containerpilot
 
-CMD ["containerpilot", "ap-spin"]
+VOLUME [ "/var/lib/consul", "${AP_STATE_DIR}" ]
+
+CMD [ "containerpilot", "ap-spin"]

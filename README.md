@@ -78,21 +78,22 @@ So major features are:
 
 This image use four directories:
 
-- **/container/environment**: for environment files.
-- **/container/service**: for services to install, setup and run.
-- **/container/service-available**: for service that may be on demand downloaded, installed, setup and run.
-- **/container/tool**: for image tools.
+- **/opt/ap/environment**: for environment files.
+- **/opt/ap/service**: for services to install, setup and run.
+- **/opt/ap/service-available**: for service that may be on demand downloaded, installed, setup and run.
+- **/opt/ap/tool**: for image tools.
 
 By the way at run time another directory is created:
-- **/container/run**: To store container run environment, state, startup files and process to run based on files in  /container/environment and /container/service directories.
+- **/opt/ap/run**: To store container run environment, state, startup files and process to run based on files in  /opt/ap/environment and /opt/ap/service directories.
 
 But this will be dealt with in the following section.
 
 ### Service directory structure
 
-This section define a service directory that can be added in /container/service or /container/service-available.
+This section define a service directory that can be added in /opt/ap/service or /opt/ap/service-available.
 
 - **my-service**: root directory
+- **my-service/bin**: binaries and utilities which are moved to /opt/ap/bin
 - **my-service/containerpilot.d**: containerpilot configuration JSON files (.json) or templates (.json.cptmpl).
 - **my-service/consul.d**: consul agent configuration JSON files (not mandatory)
 - **my-service/install.sh**: install script (not mandatory).
@@ -151,15 +152,15 @@ In the Dockerfile we are going to:
             && apt-get clean \
             && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-        # Add service directory to /container/service
-        ADD service /container/service
+        # Add service directory to ${AP_ROOT}/service
+        ADD service ${AP_ROOT}/service
 
         # Use baseimage ap-service-install script
         # https://github.com/osixia/docker-light-baseimage/blob/stable/image/tool/ap-service-install
-        RUN /container/tool/ap-service-install
+        RUN ap-service-install
 
         # Add default env directory
-        ADD environment /container/environment/99-default
+        ADD environment ${AP_ROOT}/environment/99-default
 
         # Set /var/www/ in a data volume
         VOLUME /var/www/
@@ -168,7 +169,7 @@ In the Dockerfile we are going to:
         EXPOSE 80 443
 
 
-The Dockerfile contains directives to download nginx from apt-get but all the initial setup will take place in install.sh file (called by /container/tool/ap-service-install tool) for a better build experience. The time consuming download task is decoupled from the initial setup to make great use of docker build cache. If install.sh file is changed the builder won't have to download again nginx, and will just run install scripts.
+The Dockerfile contains directives to download nginx from apt-get but all the initial setup will take place in install.sh file (called by ap-service-install tool) for a better build experience. The time consuming download task is decoupled from the initial setup to make great use of docker build cache. If install.sh file is changed the builder won't have to download again nginx, and will just run install scripts.
 
 #### Service files
 
@@ -284,14 +285,14 @@ Start a new container:
     docker run -p 8080:80 example/single-process
 
 Inspect the output and you should see that the secret is present in startup script:
-> \*\*\* Running /container/run/startup/nginx...
+> \*\*\* Running /opt/ap/run/startup/nginx...
 
 > The secret is: The database password is Baw0unga!
 
 And the secret is not defined in the process:
-> \*\*\* Remove file /container/environment/99-default/default.startup.yaml [...]
+> \*\*\* Remove file /opt/ap/environment/99-default/default.startup.yaml [...]
 
-> \*\*\* Running /container/run/process/nginx/run...
+> \*\*\* Running /opt/ap/run/process/nginx/run...
 
 > The secret is:
 
@@ -327,13 +328,13 @@ env.startup.yaml:
 
 And we mount them at run time:
 
-    docker run --volume $PWD/test-custom-env:/container/environment/01-custom \
+    docker run --volume $PWD/test-custom-env:/opt/ap/environment/01-custom \
     -p 8080:80 example/single-process
 
-Take care to link your environment files folder to `/container/environment/XX-somedir` (with XX < 99 so they will be processed before default environment files) and not  directly to `/container/environment` because this directory contains predefined baseimage environment files to fix container environment (INITRD, LANG, LANGUAGE and LC_CTYPE).
+Take care to link your environment files folder to `/opt/ap/environment/XX-somedir` (with XX < 99 so they will be processed before default environment files) and not  directly to `/opt/ap/environment` because this directory contains predefined baseimage environment files to fix container environment (INITRD, LANG, LANGUAGE and LC_CTYPE).
 
 In the output:
-> \*\*\* Running /container/run/startup/nginx...
+> \*\*\* Running /opt/ap/run/startup/nginx...
 
 > The secret is: The database password is KawaaahB0unga!!!
 
@@ -355,13 +356,13 @@ Send me a message to add your image in this list.
 
 ### Tools
 
-All container tools are available in `/container/tool` directory and are linked in `/sbin/` so they belong to the container PATH.
+All container tools are available in `/opt/ap/bin` and is added to the container PATH in the base image.
 
 
 | Filename        | Description |
 | ---------------- | ------------------- |
 | ap-service-add | A tool to download and add services in service-available directory to the regular service directory. |
-| ap-service-install | A tool that execute /container/service/install.sh and /container/service/\*/install.sh scripts. |
+| ap-service-install | A tool that execute /opt/ap/service/install.sh and /opt/ap/service/\*/install.sh scripts. |
 | ap-spin | A tool that spins, it is default application executed by containerpilot. |
 | log-helper | A simple bash tool to print message base on the log level. |
 | run | The run tool is defined as the image ENTRYPOINT (see [Dockerfile](image/Dockerfile)). It set environment and run  startup scripts and images process. More information in the [Advanced User Guide](#run). |
@@ -381,7 +382,7 @@ All container tools are available in `/container/tool` directory and are linked 
 
 A service-available is basically a normal service expect that it is in the `service-available` directory and have a `download.sh` file.
 
-To add a service-available to the current image use the `ap-service-add` tool. It will process the download.sh file of services given in argument and move them to the regular service directory (/container/service).
+To add a service-available to the current image use the `ap-service-add` tool. It will process the download.sh file of services given in argument and move them to the regular service directory (/opt/ap/service).
 
 After that the service-available will be process like regular services.
 
@@ -397,39 +398,39 @@ Here simple Dockerfile example how to add a service-available to an image:
         # https://github.com/osixia/docker-light-baseimage/blob/stable/image/service-available/:ssl-tools/download.sh
         # https://github.com/osixia/docker-light-baseimage/blob/stable/image/service-available/:cron/download.sh
         RUN apt-get -y update \
-            && /container/tool/ap-service-add :ssl-tools :cron \
+            && ap-service-add :ssl-tools :cron \
             && LC_ALL=C DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
                nginx \
                php5-fpm
         ...
 
 
-Note: Most of predefined service available start with a `:` to make sure they are installed before regular services (so they can be used by regular services). The `ap-service-install` tool process services in /container/service in alphabetical order.
+Note: Most of predefined service available start with a `:` to make sure they are installed before regular services (so they can be used by regular services). The `ap-service-install` tool process services in /opt/ap/service in alphabetical order.
 
-To create a service-available just create a regular service, add a download.sh file to set how the needed content is downloaded and add it to /container/service-available directory. The download.sh script is not mandatory if nothing need to be downloaded.
+To create a service-available just create a regular service, add a download.sh file to set how the needed content is downloaded and add it to /opt/ap/service-available directory. The download.sh script is not mandatory if nothing need to be downloaded.
 
 For example a simple image example that add service-available to this baseimage: [osixia/web-baseimage](https://github.com/osixia/docker-web-baseimage)
 
 
 ### Fix docker mounted file problems
 
-For some reasons you will probably have to mount custom files to your container. For example in the *mutliple process image example* you can customise the nginx config by mounting your custom config to "/container/service/php5-fpm/config/default" :
+For some reasons you will probably have to mount custom files to your container. For example in the *mutliple process image example* you can customise the nginx config by mounting your custom config to "/opt/ap/service/php5-fpm/config/default" :
 
-    docker run -v /data/my-nginx-config:/container/service/php5-fpm/config/default example/multiple-process
+    docker run -v /data/my-nginx-config:/opt/ap/service/php5-fpm/config/default example/multiple-process
 
 In this case every thing should work fine, but if the startup script makes some `sed` replacement or change file owner and permissions this can results in "Device or resource busy" error. See [Docker documentation](https://docs.docker.com/v1.4/userguide/dockervolumes/#mount-a-host-file-as-a-data-volume).
 
-    sed -i "s|listen 80|listen 8080|g" /container/service/php5-fpm/config/default
+    sed -i "s|listen 80|listen 8080|g" /opt/ap/service/php5-fpm/config/default
 
 To prevent that king of error light-baseimage provide *--copy-service* command argument :
 
-    docker run -v /data/my-nginx-config:/container/service/php5-fpm/config/default example/multiple-process --copy-service
+    docker run -v /data/my-nginx-config:/opt/ap/service/php5-fpm/config/default example/multiple-process --copy-service
 
-On startup this will copy all /container/service directory to /container/run/service.
+On startup this will copy all /opt/ap/service directory to /opt/ap/run/service.
 
 
 At run time you can get the container service directory with `CONTAINER_SERVICE_DIR` environment variable.
-If *--copy-service* is used *CONTAINER_SERVICE_DIR=/container/run/service* otherwise *CONTAINER_SERVICE_DIR=/container/service*
+If *--copy-service* is used *CONTAINER_SERVICE_DIR=/opt/ap/run/service* otherwise *CONTAINER_SERVICE_DIR=/opt/ap/service*
 
 So to always apply sed on the correct file in the startup script the command becomes :
 
@@ -478,8 +479,8 @@ What it does:
       -e, --skip-env-files  Skip getting environment values from environment
                             file(s).
       -s, --skip-startup-files
-                            Skip running /container/run/startup/* and
-                            /container/run/startup.sh file(s).
+                            Skip running /opt/ap/run/startup/* and
+                            /opt/ap/run/startup.sh file(s).
       -p, --skip-process-files
                             Skip running container process file(s).
       -f, --skip-finish-files
@@ -493,15 +494,15 @@ What it does:
                             Don't kill all processes on the system upon exiting.
       --wait-state FILENAME
                             Wait until the container state file exists in
-                            /container/run/state directory before starting.
-                            Usefull when 2 containers share /container/run
+                            /opt/ap/run/state directory before starting.
+                            Usefull when 2 containers share /opt/ap/run
                             directory via volume.
       --wait-first-startup  Wait until the first startup is done before starting.
-                            Usefull when 2 containers share /container/run
+                            Usefull when 2 containers share /opt/ap/run
                             directory via volume.
       --keep-startup-env    Don't remove ('.startup.yaml', '.startup.json')
                             environment files after startup scripts.
-      --copy-service        Copy /container/service to /container/run/service.
+      --copy-service        Copy /opt/ap/service to /opt/ap/run/service.
                             Help to fix docker mounted files problems.
       --dont-touch-etc-hosts
                             Don't add in /etc/hosts a line with the container ip
@@ -517,38 +518,38 @@ What it does:
 
 ##### Run directory setup
 *Run tool* will create if they not exists the following directories:
-  - /container/run/state
-  - /container/run/environment
-  - /container/run/startup
-  - /container/run/process
-  - /container/run/service
+  - /opt/ap/run/state
+  - /opt/ap/run/environment
+  - /opt/ap/run/startup
+  - /opt/ap/run/process
+  - /opt/ap/run/service
 
-At the container first start it will search in /container/service or /container/run/service (if --copy-service option is used) all image's services.
+At the container first start it will search in /opt/ap/service or /opt/ap/run/service (if --copy-service option is used) all image's services.
 
-In a service directory for example /container/service/my-service:
-  - If a startup.sh file is found, the file is linked to /container/run/startup/my-service
-  - If a process.sh file is found, the file is linked to /container/run/process/my-service/run
+In a service directory for example /opt/ap/service/my-service:
+  - If a startup.sh file is found, the file is linked to /opt/ap/run/startup/my-service
+  - If a process.sh file is found, the file is linked to /opt/ap/run/process/my-service/run
 
 ##### Startup files environment setup
-*Run tool* takes all file in /container/environment/* and import the variables values to the container environment.
-The container environment is then exported to /container/run/environment and in /container/run/environment.sh
+*Run tool* takes all file in /opt/ap/environment/* and import the variables values to the container environment.
+The container environment is then exported to /opt/ap/run/environment and in /opt/ap/run/environment.sh
 
 ##### Startup files execution
-*Run tool* iterate trough /container/run/startup/* directory in alphabetical order and run scripts.
-After each time *run tool* runs a startup script, it resets its own environment variables to the state in /container/run/environment, and re-dumps the new environment variables to /container/run/environment.sh
+*Run tool* iterate trough /opt/ap/run/startup/* directory in alphabetical order and run scripts.
+After each time *run tool* runs a startup script, it resets its own environment variables to the state in /opt/ap/run/environment, and re-dumps the new environment variables to /opt/ap/run/environment.sh
 
-After all startup script *run tool* run /container/run/startup.sh if exists.
+After all startup script *run tool* run /opt/ap/run/startup.sh if exists.
 
 ##### Process environment setup
-*Run tool* delete all .startup.yaml and .startup.json in /container/environment/* and clear the previous run environment (/container/run/environment is removed)
-Then it takes all remaining file in /container/environment/* and import the variables values to the container environment.
-The container environment is then exported to /container/run/environment and in /container/run/environment.sh
+*Run tool* delete all .startup.yaml and .startup.json in /opt/ap/environment/* and clear the previous run environment (/opt/ap/run/environment is removed)
+Then it takes all remaining file in /opt/ap/environment/* and import the variables values to the container environment.
+The container environment is then exported to /opt/ap/run/environment and in /opt/ap/run/environment.sh
 
 ##### Process execution
 
 ###### Single process image
 
-*Run tool* execute the unique /container/run/process/service-name/run file.
+*Run tool* execute the unique /opt/ap/run/process/service-name/run file.
 
 If a main command is set for example:
 
@@ -558,7 +559,7 @@ If a main command is set for example:
 
 ###### Multiple process image
 
-In a multiple process image *run tool* execute runit witch supervise /container/run/process directory and start all services automatically. Runit will also relaunched them if they failed.
+In a multiple process image *run tool* execute runit witch supervise /opt/ap/run/process directory and start all services automatically. Runit will also relaunched them if they failed.
 
 If a main command is set for example:
 
@@ -576,8 +577,8 @@ Example:
 ##### Extra environment variables
 
 *run tool* add 3 variables to the container environment:
-- **CONTAINER_STATE_DIR**: /container/run/state
-- **CONTAINER_SERVICE_DIR**: the container service directory. By default: /container/service but if the container is started with --copy-service option: /container/run/service
+- **CONTAINER_STATE_DIR**: /opt/ap/run/state
+- **CONTAINER_SERVICE_DIR**: the container service directory. By default: /opt/ap/service but if the container is started with --copy-service option: /opt/ap/run/service
 - **CONTAINER_LOG_LEVEL**: log level set by --loglevel option defaults to: 3 (info)
 
 #### log-helper

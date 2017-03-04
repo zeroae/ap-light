@@ -2,10 +2,12 @@
 import os, os.path, shutil, subprocess
 from glob import glob
 
-
 SERVICE_DIR = os.environ["AP_SERVICE_DIR"]
-GLOBAL_CONSUL_DIR = "/etc/consul.d"
-GLOBAL_CONTAINERPILOT_DIR = "/etc/containerpilot.d"
+INSTALL_DIRS = [
+        os.path.join(os.environ["AP_ROOT"], "bin"),
+        "/etc/consul.d",
+        "/etc/containerpilot.d"
+]
 INSTALL_FILENAME = "install.sh"
 PROCESS_FILENAME = "process.sh"
 nb_process = 0
@@ -15,9 +17,8 @@ def mkdir(dir_name):
         os.mkdir(dir_name)
     except OSError:
         pass
-
-mkdir(GLOBAL_CONSUL_DIR)
-mkdir(GLOBAL_CONTAINERPILOT_DIR)
+# Create the INSTALL_DIRS.if it does not exist.
+map(mkdir, INSTALL_DIRS)
 
 print("install-service")
 # Auto run global install script if available
@@ -29,9 +30,10 @@ if os.path.isfile(global_install_file):
     print("remove " + global_install_file+ "\n")
     os.remove(global_install_file)
 
+
 # For each service in /container/service
 #   - execute install script
-#   - copy consul.d and containerpilot.d config files
+#   - copy files to install dirs
 for service in sorted(os.listdir(SERVICE_DIR)):
 
     install_file=os.path.join(SERVICE_DIR, service, INSTALL_FILENAME)
@@ -43,7 +45,7 @@ for service in sorted(os.listdir(SERVICE_DIR)):
         os.remove(install_file)
 
     src_dst_dirs = [ (os.path.join(SERVICE_DIR, service, os.path.basename(dst_dir)), dst_dir)
-                        for dst_dir in [ GLOBAL_CONSUL_DIR, GLOBAL_CONTAINERPILOT_DIR ] ]
+                        for dst_dir in INSTALL_DIRS ]
     for (src, dst) in src_dst_dirs:
         for src_file in glob(os.path.join(src, '*')):
             shutil.copy2(src_file, dst)

@@ -1,7 +1,7 @@
 #!/bin/sh -e
 
 # Usage :
-# RUN /container/tool/ap-add-service [service1] [service2] ...
+# RUN ap-service-add [service1] [service2] ...
 
 SERVICE_DIR=$AP_SERVICE_DIR
 SERVICE_AVAILABLE_DIR="$AP_SERVICE_DIR-available"
@@ -10,7 +10,7 @@ DOWNLOAD_FILENAME="download.sh"
 for i in $@
 do
 
-  echo "ap-add-service: $i"
+  echo "ap-service-add: $i"
   if  [ -d "${SERVICE_AVAILABLE_DIR}/$i" ]; then
 
     if [ -f ${SERVICE_AVAILABLE_DIR}/$i/${DOWNLOAD_FILENAME} ]; then
@@ -24,7 +24,7 @@ do
     mv ${SERVICE_AVAILABLE_DIR}/$i ${SERVICE_DIR}/$i
 
   else
-    echo "service-available: $i not found in ${SERVICE_AVAILABLE_DIR}/$i"
+    echo "ap-service-add: $i not found in ${SERVICE_AVAILABLE_DIR}/$i"
     exit 1
   fi
 done

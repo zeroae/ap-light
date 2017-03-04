@@ -20,9 +20,6 @@ apt-get install -y python-dev gcc
 apt-get install -y libffi-dev libssl-dev
 pip --no-cache-dir install manta==2.6.0
 
-mv $DIR/assets/mantash.local $AP_ROOT/tool
-ln -s $AP_ROOT/tool/mantash.local /sbin
-
 apt-get remove -y python-dev gcc
 apt-get autoremove -y
 

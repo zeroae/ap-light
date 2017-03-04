@@ -1,17 +1,14 @@
 #!/bin/sh -ex
 
-## Add bash tools to /sbin
-ln -s /container/tool/* /sbin/
-
-mkdir -p /container/service
-mkdir -p /container/environment /container/environment/startup
-chmod 700 /container/environment/ /container/environment/startup
+mkdir -p $AP_ROOT/service
+mkdir -p $AP_ROOT/environment $AP_ROOT/environment/startup
+chmod 700 $AP_ROOT/environment/ $AP_ROOT/environment/startup
 
 groupadd -g 8377 docker_env
 
 # dpkg options
-cp /container/file/dpkg_nodoc /etc/dpkg/dpkg.cfg.d/01_nodoc
-cp /container/file/dpkg_nolocales /etc/dpkg/dpkg.cfg.d/01_nolocales
+cp $AP_ROOT/file/dpkg_nodoc /etc/dpkg/dpkg.cfg.d/01_nodoc
+cp $AP_ROOT/file/dpkg_nolocales /etc/dpkg/dpkg.cfg.d/01_nolocales
 
 # General config
 export LC_ALL=C
@@ -22,7 +19,7 @@ MINIMAL_APT_GET_INSTALL='apt-get install -y --no-install-recommends'
 ## https://journal.paul.querna.org/articles/2013/10/15/docker-ubuntu-on-rackspace/
 ## http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=594189
 export INITRD=no
-echo -n no > /container/environment/INITRD
+echo -n no > $AP_ROOT/environment/INITRD
 
 apt-get update
 
@@ -49,13 +46,13 @@ locale-gen C.UTF-8
 dpkg-reconfigure locales
 /usr/sbin/update-locale LANG=C.UTF-8
 
-echo -n C.UTF-8 > /container/environment/LANG
-echo -n C.UTF-8 > /container/environment/LANGUAGE
-echo -n C.UTF-8 > /container/environment/LC_CTYPE
+echo -n C.UTF-8 > $AP_ROOT/environment/LANG
+echo -n C.UTF-8 > $AP_ROOT/environment/LANGUAGE
+echo -n C.UTF-8 > $AP_ROOT/environment/LC_CTYPE
 
 # install PyYAML
-tar -C /container/file/ -xvf /container/file/PyYAML-3.11.tar.gz
-cd /container/file/PyYAML-3.11/
+tar -C $AP_ROOT/file/ -xvf $AP_ROOT/file/PyYAML-3.11.tar.gz
+cd $AP_ROOT/file/PyYAML-3.11/
 python setup.py install
 cd -
 
@@ -66,5 +63,5 @@ rm -rf /var/lib/apt/lists/*
 rm -f /etc/dpkg/dpkg.cfg.d/02apt-speedup
 
 # Remove useless files
-rm -rf /container/file
-rm -rf /container/build.sh /container/Dockerfile
+rm -rf $AP_ROOT/file
+rm -rf $AP_ROOT/build.sh $AP_ROOT/Dockerfile

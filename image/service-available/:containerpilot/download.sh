@@ -19,15 +19,13 @@ function download_consul()
         ${CONSUL_URL_BASE}/v${CONSUL_VERSION}/${archive}
     echo "${CONSUL_CHECKSUM}  /tmp/${archive}" | sha256sum -c
 
-    cd /container/tool
+    cd $APROOT/bin
     unzip /tmp/${archive}
-    chmod +x /container/tool/consul
+    chmod +x $APROOT/bin/consul
     rm /tmp/${archive}
 
     mkdir -p /var/lib/consul
     mkdir -p /etc/consul.d
-
-    ln -s /container/tool/consul /sbin
 }
 
 function download_containerpilot()
@@ -37,17 +35,13 @@ function download_containerpilot()
         ${CONTAINERPILOT_URL_BASE}/${CONTAINERPILOT_VERSION}/${archive}
     echo "${CONTAINERPILOT_SHA1}  /tmp/${archive}" | sha1sum -c
 
-    tar zxf /tmp/${archive} -C /container/tool
-    chmod +x /container/tool/containerpilot
+    tar zxf /tmp/${archive} -C $APROOT/bin
+    chmod +x $APROOT/bin/containerpilot
     rm /tmp/${archive}
 
     mkdir /etc/containerpilot.d
 
-    mv $DIR/assets/containerpilot-runonce /container/tool
-    mv $DIR/assets/containerpilot-render /container/tool
     mv $DIR/assets/containerpilot.json /etc
-
-    ln -s /container/tool/containerpilot* /sbin
 }
 
 download_consul
